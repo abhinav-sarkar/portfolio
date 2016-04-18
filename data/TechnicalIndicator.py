@@ -28,7 +28,7 @@ def MovingAverage(data, window=30, columns=['Adj Close'], type='simple'):
     return ma_data
 
 # Fractal Adaptive Moving Average
-def FRAMA(data, window=6, SC=8, FC=2):
+def FRAMA(data, window=126, SC=300, FC=4):
     if window%2 != 0:
         raise AssertionError('Window is not even')
 
@@ -42,14 +42,14 @@ def FRAMA(data, window=6, SC=8, FC=2):
 
     frama['Hl1_h'] = pd.rolling_apply(frama['Hl1_h'], window=window, func=lambda x: max(x[:window/2]), min_periods=window)
     frama['Hl1_l'] = pd.rolling_apply(frama['Hl1_l'], window=window, func=lambda x: min(x[:window/2]), min_periods=window)
-    frama['Hl1'] = (frama['Hl1_h'] - frama['Hl1_l'])/window
+    frama['Hl1'] = (frama['Hl1_h'] - frama['Hl1_l'])/(window/2)
 
     frama['Hl2_h'] = frama['Adj High']
     frama['Hl2_l'] = frama['Adj Low']
 
     frama['Hl2_h']=pd.rolling_apply(frama['Hl2_h'], window=window, func=lambda x: max(x[window / 2:]), min_periods=window)
     frama['Hl2_l']=pd.rolling_apply(frama['Hl2_l'], window=window, func=lambda x: min(x[window / 2:]), min_periods=window)
-    frama['Hl2'] = (frama['Hl2_h'] - frama['Hl2_l']) / window
+    frama['Hl2'] = (frama['Hl2_h'] - frama['Hl2_l']) / (window/2)
 
     frama['Hl_h'] = frama['Adj High']
     frama['Hl_l'] = frama['Adj Low']
@@ -66,7 +66,7 @@ def FRAMA(data, window=6, SC=8, FC=2):
     frama['NewAlpha'] = 2 / (frama['NewN'] + 1)
     frama['frama'] = frama['NewAlpha'] * np.NAN
 
-    for i in range(window-1, len(frama.index)):
+    for i in range(window-2, len(frama.index)):
         ind = frama.index[i]
         indLast = frama.index[i-1]
         if np.isnan(frama['frama'].ix[indLast]):

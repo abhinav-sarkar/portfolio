@@ -3,6 +3,12 @@ import datetime
 import pandas, StringIO
 import numpy as np
 
+def read_test_data(file):
+    return pandas.read_csv(open(file, 'r'),
+                           parse_dates=['Date'],
+                           date_parser=lambda x: pandas.datetime.strptime(x, '%m/%d/%Y'),
+                           index_col='Date')
+
 def get_symbol_prices_dataframe(symbol, begin, end):
     return pandas.read_csv(StringIO.StringIO(get_symbol_price_csv(symbol, begin, end)),
                            parse_dates=['Date'],
